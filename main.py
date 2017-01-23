@@ -18,8 +18,11 @@ askdir_entry_default = 'Enter dir location or browse..'
 counter = 0
 
 
-def update_counter():
-    counter_label.config(text=str(counter))
+def update_counter(code):
+    if code:
+        counter_label.config(text=str(counter))
+    else:
+        counter_label.config(text='DONE!')
 
 
 def worker1(file_list, percentage):
@@ -37,8 +40,8 @@ def worker1(file_list, percentage):
         image_copy.save(save_dir + filename)
         counter += 1
         if counter % 3 == 0:
-            update_counter()
-    update_counter()
+            update_counter(1)
+    update_counter(0)
 
 
 def resize():
