@@ -7,10 +7,9 @@ ImageResizer
 
 ---
 
-This image resizer was build using the PILLOW library with a GUI in Tkinter.
-
----
 
 ###ImageResizer Overview
 
-Currently ImageResizer only supports resize in percentage [%] and works on a single thread.
+This image resizer was build using the PILLOW library with a GUI in Tkinter.
+The application has multithreading support, using all of the PCs CPU.
+Currently the only feature is to resize using a percentage [%] value.
