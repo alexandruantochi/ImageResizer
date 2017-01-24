@@ -5,6 +5,7 @@ import os
 import glob
 from PIL import Image
 import multiprocessing
+import timeit
 
 about_text_string = 'Choose the directory where your pictures\nare located and' \
                     ' add the percentage that\nyou want to resize them to.\n' \
@@ -16,16 +17,21 @@ about_text_string = 'Choose the directory where your pictures\nare located and' 
 askdir_entry_default = 'Enter dir location or browse..'
 
 counter = 0
+start_time = 0
+end_time = 0
 
 
-def update_counter(code):
+def update_counter(code, thread_no):
     if code:
         counter_label.config(text=str(counter))
     else:
         counter_label.config(text='DONE!')
+        stop_time = timeit.default_timer()
+        total_time = int( stop_time - start_time )
+        info_area.insert('end', '\nThread ' + str(thread_no) + ' finished in ' + str(total_time) + 'seconds.')
 
 
-def worker1(file_list, percentage):
+def worker1(file_list, percentage, thread_no):
     """thread class"""
     global counter
     save_dir = askdir_entry.get() + '/ResizeImage/'
@@ -40,11 +46,13 @@ def worker1(file_list, percentage):
         image_copy.save(save_dir + filename)
         counter += 1
         if counter % 3 == 0:
-            update_counter(1)
-    update_counter(0)
+            update_counter(1, thread_no)
+    update_counter(0, thread_no)
 
 
 def resize():
+    global start_time
+    start_time = timeit.default_timer()
     percentage = percentage_textbox.get()
     if not percentage:
         info_area.insert('end', 'Please write a percentage!')
@@ -60,8 +68,8 @@ def resize():
         os.makedirs(askdir_entry.get() + '/ResizeImage')
     counter_label.config(text='-')
     for i in range(0, cpu):
-        file_list_chunk = file_list[int(i*len(file_list)/cpu):int((i+1)*len(file_list)/cpu)]
-        threading.Thread(target=worker1, args=(file_list_chunk, percentage)).start()
+        file_list_chunk = file_list[int(i * len(file_list) / cpu):int((i + 1) * len(file_list) / cpu)]
+        threading.Thread(target=worker1, args=(file_list_chunk, percentage, i + 1)).start()
 
 
 def ask_dir():
